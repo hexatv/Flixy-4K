@@ -135,7 +135,7 @@ export default function Navbar() {
             <div className="flex items-center gap-2">
               {/* GitHub Button */}
               <motion.a
-                href="https://github.com/hexacode/flixy"
+                href="https://github.com/hexatv/Flixy-4K"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="relative p-2 rounded-full hover:bg-foreground/[0.08] 
