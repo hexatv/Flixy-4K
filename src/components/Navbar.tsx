@@ -9,6 +9,7 @@ import {
   HeartIcon,
 } from '@heroicons/react/24/outline'
 import { GitHubLogoIcon } from '@radix-ui/react-icons'
+import { DiscordIcon } from '@/components/icons/DiscordIcon'
 
 const navLinks = [
   { 
@@ -133,9 +134,55 @@ export default function Navbar() {
 
             {/* Theme and GitHub buttons container */}
             <div className="flex items-center gap-2">
+              {/* Hexa Watch Button */}
+              <motion.a
+                href="https://hexa.watch/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="relative px-4 py-2 rounded-full hover:bg-foreground/[0.08] 
+                  transition-colors duration-200 border border-foreground/[0.08]
+                  group"
+                whileHover={{ 
+                  scale: 1.05,
+                  transition: { duration: 0.2 }
+                }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <img 
+                  src="/hexawatchlogo.png" 
+                  alt="Hexa Watch" 
+                  className="w-10 h-5 object-contain opacity-80 transition-opacity duration-200
+                    group-hover:opacity-100" 
+                />
+                <div className="absolute inset-0 rounded-full opacity-0 group-hover:opacity-100
+                  bg-gradient-to-tr from-foreground/5 via-foreground/10 to-foreground/5
+                  blur-sm transition-opacity duration-300" />
+              </motion.a>
+
+              {/* Discord Button */}
+              <motion.a
+                href="https://discord.gg/fF7TwrjR6T"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="relative p-2 rounded-full hover:bg-foreground/[0.08] 
+                  transition-colors duration-200 border border-foreground/[0.08]
+                  group"
+                whileHover={{ 
+                  scale: 1.05,
+                  transition: { duration: 0.2 }
+                }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <DiscordIcon className="w-5 h-5 text-foreground/80 transition-colors duration-200
+                  group-hover:text-foreground" />
+                <div className="absolute inset-0 rounded-full opacity-0 group-hover:opacity-100
+                  bg-gradient-to-tr from-foreground/5 via-foreground/10 to-foreground/5
+                  blur-sm transition-opacity duration-300" />
+              </motion.a>
+
               {/* GitHub Button */}
               <motion.a
-                href="https://github.com/hexatv/Flixy-4K"
+                href="https://github.com/hexacode/flixy"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="relative p-2 rounded-full hover:bg-foreground/[0.08] 
@@ -149,8 +196,6 @@ export default function Navbar() {
               >
                 <GitHubLogoIcon className="w-5 h-5 text-foreground/80 transition-colors duration-200
                   group-hover:text-foreground" />
-                
-                {/* Hover glow effect */}
                 <div className="absolute inset-0 rounded-full opacity-0 group-hover:opacity-100
                   bg-gradient-to-tr from-foreground/5 via-foreground/10 to-foreground/5
                   blur-sm transition-opacity duration-300" />
