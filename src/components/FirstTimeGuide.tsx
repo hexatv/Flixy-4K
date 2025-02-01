@@ -45,7 +45,25 @@ export function FirstTimeGuide({ isOpen, onClose }: FirstTimeGuideProps) {
       case 3:
         return "Select the Yuru server for 4K quality";
       case 4:
-        return "Click the heart to save Yuru as default";
+        return (
+          <div className="space-y-3">
+            <p>Click the heart to save Yuru as default</p>
+            <div className="mt-4 p-3 rounded-lg bg-foreground/[0.03] border border-foreground/10">
+              <p className="text-sm text-foreground/70">
+                💡 <span className="font-medium">Pro tip:</span> For the best ad-free experience, 
+                we recommend installing{' '}
+                <a 
+                  href="https://ublockorigin.com/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-primary hover:underline"
+                >
+                  uBlock Origin
+                </a>
+              </p>
+            </div>
+          </div>
+        );
       default:
         return "";
     }
@@ -122,9 +140,9 @@ export function FirstTimeGuide({ isOpen, onClose }: FirstTimeGuideProps) {
                   </div>
 
                   <div className="mt-4 p-3 sm:p-4 rounded-xl bg-foreground/[0.02] border border-foreground/10">
-                    <p className="text-base sm:text-lg font-medium text-center">
+                    <div className="text-base sm:text-lg font-medium text-center">
                       Step {currentStep}: {getStepText(currentStep)}
-                    </p>
+                    </div>
                   </div>
 
                   <motion.button
