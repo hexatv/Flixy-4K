@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "npm install && vite build",
     "preview": "vite preview",
     "generate-pwa-assets": "pwa-assets-generator",
     "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
@@ -21,6 +21,7 @@
     "@react-three/postprocessing": "^2.16.6",
     "@tanstack/react-virtual": "^3.11.3",
     "@types/three": "^0.172.0",
+    
     "axios": "^1.6.2",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
@@ -35,7 +36,8 @@
     "react-router-dom": "^6.21.0",
     "tailwind-merge": "^2.6.0",
     "three": "^0.172.0",
-    "zustand": "^4.4.7"
+    "zustand": "^4.4.7",
+    "@tanstack/react-query": "^5.0.0"
   },
   "devDependencies": {
     "@tailwindcss/line-clamp": "^0.4.4",

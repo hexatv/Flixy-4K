@@ -16,10 +16,7 @@ export default function App() {
   useEffect(() => {
     const hasSeenGuide = localStorage.getItem('has-seen-guide');
     if (!hasSeenGuide) {
-      const timer = setTimeout(() => {
-        setShowGuide(true);
-      }, 500);
-      return () => clearTimeout(timer);
+      setShowGuide(true);
     }
   }, []);
 
@@ -39,10 +36,7 @@ export default function App() {
                 </Routes>
               </main>
             </div>
-            <FirstTimeGuide 
-              isOpen={showGuide} 
-              onClose={() => setShowGuide(false)} 
-            />
+            <FirstTimeGuide onClose={() => setShowGuide(false)} />
           </div>
         </ThemeProvider>
       </QueryProvider>
