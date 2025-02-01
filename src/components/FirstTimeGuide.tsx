@@ -58,18 +58,18 @@ export function FirstTimeGuide({ isOpen, onClose }: FirstTimeGuideProps) {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-[100] p-4 bg-black/80 backdrop-blur-md"
+          className="fixed inset-0 z-[100] p-2 sm:p-4 bg-black/80 backdrop-blur-md overflow-y-auto"
         >
-          <div className="relative h-full flex items-center justify-center gap-6">
+          <div className="min-h-screen flex flex-col lg:flex-row items-center justify-center gap-4 lg:gap-6 py-4">
             {/* Player Card */}
             <motion.div
-              initial={{ scale: 0.95, opacity: 0, x: -20 }}
-              animate={{ scale: 1, opacity: 1, x: 0 }}
-              exit={{ scale: 0.95, opacity: 0, x: -20 }}
-              className="relative w-full max-w-3xl overflow-hidden rounded-2xl bg-background/95 
-                backdrop-blur-xl shadow-2xl border border-foreground/10"
+              initial={{ scale: 0.95, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.95, opacity: 0, y: 20 }}
+              className="relative w-full max-w-3xl overflow-hidden rounded-xl sm:rounded-2xl 
+                bg-background/95 backdrop-blur-xl shadow-2xl border border-foreground/10"
             >
-              <div className="relative w-full bg-black/50" style={{ height: '500px' }}>
+              <div className="relative w-full bg-black/50" style={{ height: '300px', maxHeight: '40vh' }}>
                 {randomMovieId ? (
                   <iframe
                     key={randomMovieId}
@@ -88,25 +88,25 @@ export function FirstTimeGuide({ isOpen, onClose }: FirstTimeGuideProps) {
 
             {/* Guide Card */}
             <motion.div
-              initial={{ scale: 0.95, opacity: 0, x: 20 }}
-              animate={{ scale: 1, opacity: 1, x: 0 }}
-              exit={{ scale: 0.95, opacity: 0, x: 20 }}
+              initial={{ scale: 0.95, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.95, opacity: 0, y: 20 }}
               className="relative w-full max-w-md"
             >
               <button
                 onClick={handleClose}
-                className="absolute -top-12 right-0 z-10 p-2 rounded-full 
+                className="absolute -top-2 right-0 z-10 p-2 rounded-full 
                   bg-background/50 backdrop-blur-sm border border-foreground/10
                   text-foreground/70 hover:bg-foreground/10 transition-colors"
               >
                 <XMarkIcon className="w-5 h-5" />
               </button>
 
-              <div className="bg-background/95 backdrop-blur-xl rounded-2xl border border-foreground/10 
-                shadow-2xl overflow-hidden">
-                <div className="p-6 space-y-4">
-                  <h2 className="text-2xl font-bold">Welcome to Flixy! 🎬</h2>
-                  <p className="text-foreground/70">
+              <div className="bg-background/95 backdrop-blur-xl rounded-xl sm:rounded-2xl 
+                border border-foreground/10 shadow-2xl overflow-hidden">
+                <div className="p-4 sm:p-6 space-y-4">
+                  <h2 className="text-xl sm:text-2xl font-bold text-center">Welcome to Flixy! 🎬</h2>
+                  <p className="text-sm sm:text-base text-foreground/70 text-center">
                     Let's set up your viewing experience for the best quality in 4 easy steps.
                   </p>
 
@@ -121,8 +121,8 @@ export function FirstTimeGuide({ isOpen, onClose }: FirstTimeGuideProps) {
                     ))}
                   </div>
 
-                  <div className="mt-4 p-4 rounded-xl bg-foreground/[0.02] border border-foreground/10">
-                    <p className="text-lg font-medium text-center">
+                  <div className="mt-4 p-3 sm:p-4 rounded-xl bg-foreground/[0.02] border border-foreground/10">
+                    <p className="text-base sm:text-lg font-medium text-center">
                       Step {currentStep}: {getStepText(currentStep)}
                     </p>
                   </div>
@@ -132,7 +132,8 @@ export function FirstTimeGuide({ isOpen, onClose }: FirstTimeGuideProps) {
                     whileTap={{ scale: 0.98 }}
                     onClick={() => currentStep < 4 ? setCurrentStep(currentStep + 1) : handleClose()}
                     className="w-full px-4 py-2.5 rounded-xl bg-primary/20 text-primary 
-                      border border-primary/30 hover:bg-primary/30 transition-colors mt-4"
+                      border border-primary/30 hover:bg-primary/30 transition-colors mt-4
+                      text-sm sm:text-base font-medium"
                   >
                     {currentStep < 4 ? 'Next Step' : 'Finish Setup'}
                   </motion.button>
