@@ -24,7 +24,7 @@
 Clone the repository:
 
 ```bash
-git clone https://github.com/yourusername/flixy.git
+git clone https://github.com/hexatv/Flixy-4K.git
 cd flixy
 npm install
 ```
