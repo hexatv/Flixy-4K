@@ -12,24 +12,25 @@ interface ContentCardProps {
   release_date: string;
   vote_average: number;
   backdrop_with_title: string;
+  quality: string;
   showWatchState?: boolean;
   isCornerPage?: boolean;
 }
 
-export function ContentCard(item: ContentCardProps & { showWatchState?: boolean; isCornerPage?: boolean }) {
+export function ContentCard({ id, title, overview, release_date, vote_average, backdrop_with_title, quality, showWatchState, isCornerPage }: ContentCardProps) {
   const navigate = useNavigate();
   const { favorites, toggleFavorite } = useFavorites();
-  const isFavorite = favorites.some(fav => fav.id === item.id);
+  const isFavorite = favorites.some(fav => fav.id === id);
 
   const handleCardClick = (e: React.MouseEvent) => {
     if (!(e.target as HTMLElement).closest('button')) {
-      navigate(`/movie/${item.id}?provider=videasy`);
+      navigate(`/movie/${id}?provider=videasy`);
     }
   };
 
   const handleFavoriteClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    toggleFavorite(item);
+    toggleFavorite({ id, title, overview, release_date, vote_average, backdrop_with_title, quality });
   };
 
   return (
@@ -52,10 +53,16 @@ export function ContentCard(item: ContentCardProps & { showWatchState?: boolean;
       >
         <div className="relative aspect-[16/9]">
           <img
-            src={item.backdrop_with_title}
-            className="w-full h-full object-cover transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]
-              group-hover:scale-105 group-hover:rotate-1 will-change-transform"
-            loading="eager"
+            src={backdrop_with_title}
+            alt={title}
+            className="w-full h-full object-cover"
+            loading="lazy"
+            decoding="async"
+            fetchPriority="high"
+            style={{
+              contentVisibility: 'auto',
+              containIntrinsicSize: '16/9',
+            }}
           />
           
           {/* Overlay gradient */}
@@ -85,17 +92,17 @@ export function ContentCard(item: ContentCardProps & { showWatchState?: boolean;
           {/* Info Bar */}
           <div className="absolute inset-x-0 bottom-0 p-3 sm:p-4 flex items-center gap-2 sm:gap-4">
             <span className="text-xs sm:text-sm font-medium text-white/90">
-              {new Date(item.release_date).getFullYear()}
+              {new Date(release_date).getFullYear()}
             </span>
             
-            {item.vote_average > 0 && (
+            {vote_average > 0 && (
               <div className="hidden sm:flex items-center gap-1.5">
                 <div className="flex gap-0.5">
                   {[1, 2, 3, 4, 5].map((star) => (
                     <span 
                       key={star}
                       className={`text-xs ${
-                        star <= Math.round(item.vote_average / 2)
+                        star <= Math.round(vote_average / 2)
                           ? 'text-yellow-400'
                           : 'text-white/20'
                       }`}
@@ -105,22 +112,22 @@ export function ContentCard(item: ContentCardProps & { showWatchState?: boolean;
                   ))}
                 </div>
                 <span className="text-xs sm:text-sm text-white/90">
-                  {item.vote_average.toFixed(1)}
+                  {vote_average.toFixed(1)}
                 </span>
               </div>
             )}
           </div>
 
           {/* Watch State Button */}
-          {item.showWatchState && (
+          {showWatchState && (
             <div className="absolute top-2 left-2 z-10">
               <WatchStateButton
-                id={item.id.toString()}
-                poster_path={item.backdrop_with_title}
-                title={item.title}
+                id={id.toString()}
+                poster_path={backdrop_with_title}
+                title={title}
                 media_type="movie"
-                className={item.isCornerPage ? "!py-1 !px-2.5 sm:!px-4 sm:!py-2" : ""}
-                showTextOnMobile={!item.isCornerPage}
+                className={isCornerPage ? "!py-1 !px-2.5 sm:!px-4 sm:!py-2" : ""}
+                showTextOnMobile={!isCornerPage}
               />
             </div>
           )}
