@@ -16,6 +16,9 @@
 - 🎬 **4K Streaming**: High-quality video playback made possible by videasy[https://videasy.net]
 - 🌓 **Dark/Light Theme**: Beautiful themes with smooth transitions
 - 📱 **PWA Support**: Install as a native app on any device
+- 💾 **Offline Capability**: Basic functionality without internet
+- 🎯 **Server Selection**: Choose your preferred streaming server
+- 🔖 **Watch History**: Track your watching progress
 - 💫 **Smooth Animations**: Powered by Framer Motion
 - 📱 **Responsive Design**: Perfect experience on any device
 
