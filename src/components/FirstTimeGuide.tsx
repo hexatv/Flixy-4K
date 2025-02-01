@@ -78,31 +78,31 @@ export function FirstTimeGuide({ isOpen, onClose }: FirstTimeGuideProps) {
           exit={{ opacity: 0 }}
           className="fixed inset-0 z-[100] p-2 sm:p-4 bg-black/80 backdrop-blur-md overflow-y-auto"
         >
-          <div className="min-h-screen flex flex-col lg:flex-row items-center justify-center gap-4 lg:gap-8 p-4 lg:p-8">
+          <div className="min-h-screen flex flex-col lg:flex-row items-center justify-center gap-4 lg:gap-8 p-4">
             {/* Player Card */}
             <motion.div
               initial={{ scale: 0.95, opacity: 0, y: 20 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.95, opacity: 0, y: 20 }}
-              className="relative w-full lg:w-[800px] overflow-hidden rounded-xl sm:rounded-2xl 
+              className="relative w-full lg:w-[900px] overflow-hidden rounded-xl sm:rounded-2xl 
                 bg-background/95 backdrop-blur-xl shadow-2xl border border-foreground/10"
             >
-              <div className="relative w-full bg-black/50" 
-                style={{ height: 'min(350px, 40vh)', maxHeight: '500px' }}
-              >
-                {randomMovieId ? (
-                  <iframe
-                    key={randomMovieId}
-                    src={`https://player.videasy.net/movie/${randomMovieId}?color=ffffff`}
-                    className="absolute inset-0 w-full h-full"
-                    allowFullScreen
-                    allow="fullscreen"
-                  />
-                ) : (
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="w-8 h-8 border-2 border-primary/20 border-t-primary rounded-full animate-spin" />
-                  </div>
-                )}
+              <div className="relative w-full bg-black/50">
+                <div className="aspect-video lg:h-[600px]">
+                  {randomMovieId ? (
+                    <iframe
+                      key={randomMovieId}
+                      src={`https://player.videasy.net/movie/${randomMovieId}?color=ffffff`}
+                      className="absolute inset-0 w-full h-full"
+                      allowFullScreen
+                      allow="fullscreen"
+                    />
+                  ) : (
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <div className="w-8 h-8 border-2 border-primary/20 border-t-primary rounded-full animate-spin" />
+                    </div>
+                  )}
+                </div>
               </div>
             </motion.div>
 
@@ -111,7 +111,7 @@ export function FirstTimeGuide({ isOpen, onClose }: FirstTimeGuideProps) {
               initial={{ scale: 0.95, opacity: 0, y: 20 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.95, opacity: 0, y: 20 }}
-              className="relative w-full lg:w-[800px]"
+              className="relative w-full lg:w-[900px]"
             >
               <button
                 onClick={handleClose}
@@ -124,27 +124,27 @@ export function FirstTimeGuide({ isOpen, onClose }: FirstTimeGuideProps) {
 
               <div className="bg-background/95 backdrop-blur-xl rounded-xl sm:rounded-2xl 
                 border border-foreground/10 shadow-2xl overflow-hidden
-                min-h-[min(350px,40vh)] lg:min-h-[500px] flex flex-col"
+                min-h-[350px] lg:h-[600px] flex flex-col"
               >
-                <div className="flex-1 p-6 sm:p-8 space-y-6">
-                  <h2 className="text-2xl sm:text-3xl font-bold text-center">Welcome to Flixy! 🎬</h2>
-                  <p className="text-base sm:text-lg text-foreground/70 text-center">
+                <div className="flex-1 p-6 sm:p-8 space-y-6 lg:space-y-8">
+                  <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-center">Welcome to Flixy! 🎬</h2>
+                  <p className="text-base sm:text-lg lg:text-xl text-foreground/70 text-center">
                     Let's set up your viewing experience for the best quality in 4 easy steps.
                   </p>
 
-                  <div className="flex justify-center gap-3 pt-4">
+                  <div className="flex justify-center gap-3 pt-4 lg:pt-8">
                     {[1, 2, 3, 4].map((step) => (
                       <div
                         key={step}
-                        className={`w-3 h-3 rounded-full transition-colors duration-300 ${
+                        className={`w-3 h-3 lg:w-4 lg:h-4 rounded-full transition-colors duration-300 ${
                           step === currentStep ? 'bg-primary' : 'bg-foreground/20'
                         }`}
                       />
                     ))}
                   </div>
 
-                  <div className="mt-6 p-4 sm:p-6 rounded-xl bg-foreground/[0.02] border border-foreground/10">
-                    <div className="text-lg sm:text-xl font-medium text-center">
+                  <div className="mt-6 lg:mt-8 p-4 lg:p-8 rounded-xl bg-foreground/[0.02] border border-foreground/10">
+                    <div className="text-lg sm:text-xl lg:text-2xl font-medium text-center">
                       Step {currentStep}: {getStepText(currentStep)}
                     </div>
                   </div>
@@ -153,9 +153,9 @@ export function FirstTimeGuide({ isOpen, onClose }: FirstTimeGuideProps) {
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     onClick={() => currentStep < 4 ? setCurrentStep(currentStep + 1) : handleClose()}
-                    className="w-full px-6 py-3 rounded-xl bg-primary/20 text-primary 
-                      border border-primary/30 hover:bg-primary/30 transition-colors mt-8
-                      text-base sm:text-lg font-medium"
+                    className="w-full px-6 py-3 lg:py-4 rounded-xl bg-primary/20 text-primary 
+                      border border-primary/30 hover:bg-primary/30 transition-colors mt-8 lg:mt-auto
+                      text-base sm:text-lg lg:text-xl font-medium"
                   >
                     {currentStep < 4 ? 'Next Step' : 'Finish Setup'}
                   </motion.button>
