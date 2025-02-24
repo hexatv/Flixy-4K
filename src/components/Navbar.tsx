@@ -54,7 +54,6 @@ export default function Navbar() {
           isScrolled ? 'py-1 sm:py-2' : 'py-2 sm:py-3'
         }`}
       >
-        {/* Enhanced Background effect for both themes */}
         <div className={`absolute inset-0 transition-opacity duration-500 ${
           isScrolled ? 'opacity-100' : 'opacity-0'
         }`}>
@@ -63,10 +62,8 @@ export default function Navbar() {
           <div className="absolute inset-x-0 bottom-0 h-px bg-foreground/[0.08]" />
         </div>
 
-        {/* Main navigation */}
         <nav className="relative max-w-[1440px] mx-auto px-3 sm:px-6">
           <div className="flex items-center justify-between gap-2 sm:gap-8">
-            {/* Logo Section */}
             <motion.div
               whileHover={{ y: -2 }}
               transition={{ duration: 0.2 }}
@@ -79,12 +76,10 @@ export default function Navbar() {
                   className="relative flex items-center"
                 >
                   <div className="relative">
-                    {/* Glow effect */}
                     <div className="absolute inset-0 blur-xl opacity-50 dark:opacity-30">
                       <div className="absolute inset-0 bg-gradient-to-r from-foreground/20 via-foreground/30 to-foreground/20 dark:from-white/20 dark:via-white/30 dark:to-white/20 rounded-full transform scale-110" />
                     </div>
                     
-                    {/* Logo image */}
                     <img 
                       src="/logo.png" 
                       alt="Flixy Logo" 
@@ -92,7 +87,6 @@ export default function Navbar() {
                         transition-all duration-300 hover:brightness-110" 
                     />
                     
-                    {/* Subtle shine effect */}
                     <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/5 to-transparent 
                       rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                   </div>
@@ -100,7 +94,6 @@ export default function Navbar() {
               </Link>
             </motion.div>
 
-            {/* Desktop Navigation Links */}
             <div className="hidden md:block">
               <div className="flex items-center gap-2 p-1.5 rounded-full bg-foreground/[0.03] border border-foreground/[0.08]">
                 {navLinks.map((link) => (
@@ -132,9 +125,7 @@ export default function Navbar() {
               </div>
             </div>
 
-            {/* Theme and GitHub buttons container */}
             <div className="flex items-center gap-2">
-              {/* Hexa Watch Button */}
               <motion.a
                 href="https://hexa.watch/"
                 target="_blank"
@@ -159,9 +150,8 @@ export default function Navbar() {
                   blur-sm transition-opacity duration-300" />
               </motion.a>
 
-              {/* Discord Button */}
               <motion.a
-                href="https://discord.gg/fF7TwrjR6T"
+                href="https://discord.gg/yvwWjqvzjET"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="relative p-2 rounded-full hover:bg-foreground/[0.08] 
@@ -180,7 +170,6 @@ export default function Navbar() {
                   blur-sm transition-opacity duration-300" />
               </motion.a>
 
-              {/* GitHub Button */}
               <motion.a
                 href="https://github.com/hexatv/Flixy-4K/"
                 target="_blank"
@@ -201,7 +190,6 @@ export default function Navbar() {
                   blur-sm transition-opacity duration-300" />
               </motion.a>
 
-              {/* Theme Toggle */}
               <motion.button
                 onClick={toggleTheme}
                 className="relative p-2 rounded-full hover:bg-foreground/[0.08] 
@@ -237,7 +225,6 @@ export default function Navbar() {
         </nav>
       </motion.header>
 
-      {/* Mobile Navigation */}
       <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-xl border-t border-foreground/[0.08]">
         <div className="max-w-[1440px] mx-auto">
           <div className="flex items-center justify-around px-2 py-2">
@@ -260,7 +247,6 @@ export default function Navbar() {
           </div>
         </div>
 
-        {/* Add subtle gradient overlay */}
         <div className="absolute inset-x-0 -top-6 h-6 bg-gradient-to-t from-background/80 to-transparent" />
       </div>
     </>
