@@ -79,7 +79,6 @@ export function FirstTimeGuide({ isOpen, onClose }: FirstTimeGuideProps) {
           className="fixed inset-0 z-[100] p-2 sm:p-4 bg-black/80 backdrop-blur-md overflow-y-auto"
         >
           <div className="min-h-screen flex flex-col lg:flex-row items-center justify-center gap-4 lg:gap-8 p-4">
-            {/* Player Card */}
             <motion.div
               initial={{ scale: 0.95, opacity: 0, y: 20 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
@@ -106,7 +105,6 @@ export function FirstTimeGuide({ isOpen, onClose }: FirstTimeGuideProps) {
               </div>
             </motion.div>
 
-            {/* Guide Card */}
             <motion.div
               initial={{ scale: 0.95, opacity: 0, y: 20 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}

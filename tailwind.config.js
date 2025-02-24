@@ -6,6 +6,13 @@ export default {
   ],
   darkMode: 'class',
   theme: {
+    container: {
+      center: true,
+      padding: "2rem",
+      screens: {
+        "2xl": "1400px",
+      },
+    },
     extend: {
       colors: {
         border: "hsl(var(--border))",
@@ -48,7 +55,7 @@ export default {
         sm: "calc(var(--radius) - 4px)",
       },
       fontFamily: {
-        sans: ['Inter var', 'sans-serif'],
+        sans: ['Inter var', 'system-ui', 'sans-serif'],
       },
       animation: {
         'gradient': 'gradient 8s linear infinite',
@@ -56,6 +63,10 @@ export default {
         'shine': 'shine 1.5s ease-in-out infinite',
         'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
         'shimmer': 'shimmer 2.5s linear infinite',
+        'skeleton': 'skeleton-loading 1.4s ease infinite',
+        'bounce-sm': 'bounce-sm 1s infinite',
+        'spin-slow': 'spin 2s linear infinite',
+        'ping-sm': 'ping-sm 1s cubic-bezier(0, 0, 0.2, 1) infinite',
       },
       keyframes: {
         gradient: {
@@ -84,9 +95,44 @@ export default {
           '0%': { transform: 'translateX(-100%)' },
           '100%': { transform: 'translateX(100%)' },
         },
+        'bounce-sm': {
+          '0%, 100%': {
+            transform: 'translateY(-10%)',
+            animationTimingFunction: 'cubic-bezier(0.8, 0, 1, 1)',
+          },
+          '50%': {
+            transform: 'translateY(0)',
+            animationTimingFunction: 'cubic-bezier(0, 0, 0.2, 1)',
+          },
+        },
+        'ping-sm': {
+          '75%, 100%': {
+            transform: 'scale(1.1)',
+            opacity: '0',
+          },
+        },
       },
       backdropBlur: {
         xs: '2px',
+      },
+      transitionDuration: {
+        '400': '400ms',
+      },
+      transitionTimingFunction: {
+        'bounce-sm': 'cubic-bezier(0.4, 0, 0.2, 1)',
+      },
+      boxShadow: {
+        'glow-sm': '0 2px 8px -1px rgba(var(--primary), 0.08)',
+        'glow': '0 4px 16px -2px rgba(var(--primary), 0.1)',
+        'glow-lg': '0 8px 32px -4px rgba(var(--primary), 0.12)',
+      },
+      backgroundImage: {
+        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+        'gradient-conic': 'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
+      },
+      scale: {
+        '98': '.98',
+        '102': '1.02',
       },
     },
   },

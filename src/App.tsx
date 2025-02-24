@@ -16,7 +16,6 @@ export default function App() {
   useEffect(() => {
     const hasSeenGuide = localStorage.getItem('has-seen-guide');
     if (!hasSeenGuide) {
-      // Add a small delay to ensure components are mounted
       const timer = setTimeout(() => {
         setShowGuide(true);
       }, 500);

@@ -19,9 +19,9 @@ export const useThemeStore = create<ThemeState>()(
     {
       name: 'theme-storage',
       onRehydrateStorage: () => {
-        // Listen for system theme changes
         const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
-        const handleChange = (e: MediaQueryListEvent) => {
+        const handleChange = (event: Event) => {
+          const e = event as MediaQueryListEvent
           useThemeStore.getState().setTheme(e.matches)
         }
         mediaQuery.addEventListener('change', handleChange)

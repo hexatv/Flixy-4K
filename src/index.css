@@ -8,51 +8,50 @@
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
     
-    /* Light theme - White background with pure black text */
     --background: 0 0% 100%;
-    --foreground: 0 0% 0%;
+    --foreground: 240 10% 3.9%;
     --card: 0 0% 100%;
-    --card-foreground: 0 0% 0%;
+    --card-foreground: 240 10% 3.9%;
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 0%;
-    --primary: 0 0% 0%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 0 0% 96%;
-    --secondary-foreground: 0 0% 0%;
-    --muted: 0 0% 96%;
-    --muted-foreground: 0 0% 45%;
-    --accent: 0 0% 96%;
-    --accent-foreground: 0 0% 0%;
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 100%;
-    --border: 0 0% 90%;
-    --input: 0 0% 90%;
-    --ring: 0 0% 0%;
-    --radius: 0.5rem;
+    --popover-foreground: 240 10% 3.9%;
+    --primary: 240 5.9% 10%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 240 4.8% 95.9%;
+    --secondary-foreground: 240 5.9% 10%;
+    --muted: 240 4.8% 95.9%;
+    --muted-foreground: 240 3.8% 46.1%;
+    --accent: 240 4.8% 95.9%;
+    --accent-foreground: 240 5.9% 10%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 5.9% 90%;
+    --input: 240 5.9% 90%;
+    --ring: 240 5.9% 10%;
+    --radius: 1rem;
   }
 
   .dark {
-    /* Dark theme - Pure black background with white text */
-    --background: 0 0% 0%;
-    --foreground: 0 0% 100%;
-    --card: 0 0% 0%;
-    --card-foreground: 0 0% 100%;
-    --popover: 0 0% 0%;
-    --popover-foreground: 0 0% 100%;
-    --primary: 0 0% 100%;
-    --primary-foreground: 0 0% 0%;
-    --secondary: 0 0% 15%;
-    --secondary-foreground: 0 0% 100%;
-    --muted: 0 0% 15%;
-    --muted-foreground: 0 0% 65%;
-    --accent: 0 0% 15%;
-    --accent-foreground: 0 0% 100%;
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 100%;
-    --border: 0 0% 20%;
-    --input: 0 0% 20%;
-    --ring: 0 0% 100%;
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
+    --card: 240 10% 3.9%;
+    --card-foreground: 0 0% 98%;
+    --popover: 240 10% 3.9%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 0 0% 98%;
+    --primary-foreground: 240 5.9% 10%;
+    --secondary: 240 3.7% 15.9%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 240 3.7% 15.9%;
+    --muted-foreground: 240 5% 64.9%;
+    --accent: 240 3.7% 15.9%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 3.7% 15.9%;
+    --input: 240 3.7% 15.9%;
+    --ring: 240 4.9% 83.9%;
   }
 }
 
@@ -60,36 +59,74 @@
   * {
     @apply border-border;
   }
-  body {
-    @apply bg-background text-foreground;
+  
+  html {
+    @apply antialiased scroll-smooth;
   }
   
-  /* Ensure text remains crisp */
-  h1, h2, h3, h4, h5, h6, p, span {
-    @apply subpixel-antialiased;
-    text-shadow: none;
-    backdrop-filter: none;
+  body {
+    @apply bg-background text-foreground min-h-screen relative overflow-x-hidden;
+    font-feature-settings: "rlig" 1, "calt" 1, "ss01" 1;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-bold tracking-tight text-foreground;
+  }
+
+  p {
+    @apply leading-relaxed text-foreground/90;
+  }
+  
+  ::selection {
+    @apply bg-primary/20 text-foreground;
   }
 }
 
 @layer utilities {
   .text-gradient {
     @apply bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/80;
+  }
+
+  .text-shadow-sm {
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  }
+
+  .text-shadow {
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .text-shadow-md {
+    text-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
+  }
+
+  .text-shadow-lg {
+    text-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+  }
+
+  .text-shadow-none {
     text-shadow: none;
-    backdrop-filter: none;
   }
 }
 
 @keyframes gradient {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
+  0% { background-position: 0% 50% }
+  50% { background-position: 100% 50% }
+  100% { background-position: 0% 50% }
+}
+
+@keyframes pulse-slow {
+  0%, 100% { opacity: 0.3 }
+  50% { opacity: 0.5 }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0) }
+  50% { transform: translateY(-10px) }
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%) }
+  100% { transform: translateX(100%) }
 }
 
 .animate-gradient {
@@ -97,33 +134,57 @@
   animation: gradient 8s ease infinite;
 }
 
-@keyframes pulse-slow {
-  0%, 100% {
-    opacity: 0.3;
-  }
-  50% {
-    opacity: 0.5;
-  }
+.animate-float {
+  animation: float 6s ease-in-out infinite;
 }
 
-/* Custom scrollbar for webkit browsers */
+.animate-shimmer {
+  animation: shimmer 2.5s linear infinite;
+}
+
 ::-webkit-scrollbar {
-  width: 10px;
+  @apply w-2;
 }
 
 ::-webkit-scrollbar-track {
-  @apply bg-background;
+  @apply bg-background/50 backdrop-blur-sm;
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply bg-primary/20 rounded-full;
+  @apply bg-primary/20 rounded-full hover:bg-primary/30 transition-colors duration-200;
 }
 
-::-webkit-scrollbar-thumb:hover {
-  @apply bg-primary/30;
+.glass {
+  @apply bg-background/50 backdrop-blur-xl border border-foreground/[0.08] shadow-lg;
 }
 
-/* Selection color */
-::selection {
-  @apply bg-primary/20 text-foreground;
+.glass-hover {
+  @apply hover:bg-foreground/[0.03] hover:border-foreground/[0.12] transition-all duration-300;
+}
+
+.glass-sm {
+  @apply bg-background/30 backdrop-blur-md border border-foreground/[0.05] shadow-sm;
+}
+
+.glass-lg {
+  @apply bg-background/70 backdrop-blur-2xl border border-foreground/[0.12] shadow-xl;
+}
+
+.focus-ring {
+  @apply focus:outline-none focus:ring-2 focus:ring-primary/20 focus:ring-offset-2 focus:ring-offset-background;
+}
+
+@keyframes skeleton-loading {
+  0% { background-position: 200% 0 }
+  100% { background-position: -200% 0 }
+}
+
+.skeleton {
+  background: linear-gradient(90deg, 
+    var(--border) 25%, 
+    var(--muted) 37%, 
+    var(--border) 63%
+  );
+  background-size: 400% 100%;
+  animation: skeleton-loading 1.4s ease infinite;
 } 

@@ -1,9 +1,16 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { motion, AnimatePresence, LayoutGroup } from 'framer-motion'; 
-import { MagnifyingGlassIcon, ArrowUpIcon, AdjustmentsHorizontalIcon, FilmIcon } from '@heroicons/react/24/outline';
+import { MagnifyingGlassIcon, ArrowUpIcon, AdjustmentsHorizontalIcon, FilmIcon, SparklesIcon } from '@heroicons/react/24/outline';
 import { ContentCard } from '@/components/ContentCard';
 import { RandomMovieModal } from '@/components/RandomMovieModal';
+
+declare global {
+  interface Window {
+    scrollY: number;
+    scrollTo(options: { top: number; behavior: 'auto' | 'smooth' }): void;
+  }
+}
 
 interface MediaItem {
   id: number;
@@ -25,6 +32,12 @@ interface MediaItem {
 interface Genre {
   id: number;
   name: string;
+}
+
+interface ApiResponse {
+  success: boolean;
+  movies: MediaItem[];
+  total: number;
 }
 
 const SORT_OPTIONS = [
@@ -59,7 +72,6 @@ const GENRES: Genre[] = [
   { id: 37, name: 'Western' },
 ];
 
-
 const CACHE_TIME = 1000 * 60 * 60 * 24;
 const STALE_TIME = 1000 * 60 * 60;
 
@@ -71,51 +83,86 @@ export function FourKPage() {
   const [showFilters, setShowFilters] = useState(false);
   const [randomMovie, setRandomMovie] = useState<MediaItem | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [debouncedSearch, setDebouncedSearch] = useState('');
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchQuery);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
 
   const fetchMovies = async (): Promise<MediaItem[]> => {
     try {
       const cachedData = localStorage.getItem('4k-movies');
       const cachedTimestamp = localStorage.getItem('4k-movies-timestamp');
+      const cachedTotal = localStorage.getItem('4k-movies-total');
   
-      if (cachedData && cachedTimestamp) {
+      if (cachedData && cachedTimestamp && cachedTotal) {
         const isStale = Date.now() - parseInt(cachedTimestamp) > STALE_TIME;
-        if (!isStale) {
-          return JSON.parse(cachedData);
+        
+        const checkResponse = await fetch('https://fishstick.hexa.watch/api/4k');
+        const checkData = await checkResponse.json() as ApiResponse;
+        
+        if (!isStale && parseInt(cachedTotal) === checkData.total) {
+          const parsed = JSON.parse(cachedData) as MediaItem[];
+          if (parsed.length === checkData.total) {
+            console.log(`Using cached data with ${cachedTotal} movies`);
+            return parsed;
+          }
         }
       }
 
-      const response = await fetch('https://sources.hexa.watch/4k', {
-        method: 'GET',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-        },
-        credentials: 'omit'
-      });
+      let allMovies: MediaItem[] = [];
+      let page = 1;
+      let totalMovies = 0;
+      
+      do {
+        const response = await fetch(`https://fishstick.hexa.watch/api/4k?page=${page}`, {
+          method: 'GET',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+          },
+          credentials: 'omit'
+        });
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      
-      const data = await response.json();
-      console.log('API Response:', data);
-      
-      if (data.success && Array.isArray(data.movies)) {
-        localStorage.setItem('4k-movies', JSON.stringify(data.movies));
-        localStorage.setItem('4k-movies-timestamp', Date.now().toString());
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
         
-        return data.movies;
-      } else {
-        console.error('Invalid data format:', data);
-        throw new Error('Invalid data format received from API');
-      }
+        const data = await response.json() as ApiResponse;
+        
+        if (!data.success || !Array.isArray(data.movies)) {
+          throw new Error('Invalid data format received from API');
+        }
+
+        allMovies = [...allMovies, ...data.movies];
+        totalMovies = data.total;
+        
+        console.log(`Fetched page ${page}: ${data.movies.length} movies (Total: ${allMovies.length}/${totalMovies})`);
+        
+        if (data.movies.length === 0) break;
+        page++;
+        
+        await new Promise(resolve => setTimeout(resolve, 100));
+      } while (allMovies.length < totalMovies);
+
+      console.log(`Successfully fetched all ${allMovies.length} movies`);
+      
+      localStorage.setItem('4k-movies', JSON.stringify(allMovies));
+      localStorage.setItem('4k-movies-timestamp', Date.now().toString());
+      localStorage.setItem('4k-movies-total', totalMovies.toString());
+      
+      return allMovies;
     } catch (error) {
       console.error('Error fetching movies:', error);
       const cachedData = localStorage.getItem('4k-movies');
       if (cachedData) {
         try {
-          const parsed = JSON.parse(cachedData);
+          const parsed = JSON.parse(cachedData) as MediaItem[];
           if (Array.isArray(parsed)) {
+            console.warn('Using cached data due to fetch error');
             return parsed;
           }
         } catch (e) {
@@ -131,18 +178,33 @@ export function FourKPage() {
     queryFn: fetchMovies,
     staleTime: STALE_TIME,
     gcTime: CACHE_TIME,
-    refetchOnMount: true,
+    refetchOnMount: false,
     refetchOnWindowFocus: false,
     retry: 2,
     retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+    initialData: () => {
+      const cachedData = localStorage.getItem('4k-movies');
+      if (cachedData) {
+        try {
+          const parsed = JSON.parse(cachedData) as MediaItem[];
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            return parsed;
+          }
+        } catch (e) {
+          console.error('Error parsing cached data:', e);
+        }
+      }
+      return [];
+    }
   });
 
   useEffect(() => {
-    console.log('Items loaded:', items?.length);
-    if (items?.length === 0) {
+    if (items?.length === 0 && !isLoading) {
       console.log('No items found in response');
+    } else if (items?.length > 0) {
+      console.log('Items loaded:', items.length);
     }
-  }, [items]);
+  }, [items, isLoading]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -172,29 +234,27 @@ export function FourKPage() {
       (a.runtime || 0) - (b.runtime || 0),
   }), []);
 
-  const filteredAndSortedItems = useMemo(() => {
+  const filteredItems = useMemo(() => {
     if (!items || items.length === 0) return [];
     
-    let filtered = items;
+    return items.filter((item: MediaItem) => {
+      const matchesSearch = !debouncedSearch || 
+        item.title.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
+        item.overview.toLowerCase().includes(debouncedSearch.toLowerCase());
 
-    if (searchQuery) {
-      filtered = filtered.filter((item: MediaItem) =>
-        item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        item.overview.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-    }
+      const matchesGenres = selectedGenres.length === 0 || 
+        selectedGenres.every(selectedGenre => 
+          item.genres?.some(genre => genre.id === selectedGenre)
+        );
 
-    if (selectedGenres.length > 0) {
-      filtered = filtered.filter((item: MediaItem) =>
-        selectedGenres.every((selectedGenre: number) =>
-          item.genres?.some((genre: { id: number; name: string }) => genre.id === selectedGenre)
-        )
-      );
-    }
+      return matchesSearch && matchesGenres;
+    });
+  }, [items, debouncedSearch, selectedGenres]);
 
-    const sortFn = sortFunctions[sortBy as keyof typeof sortFunctions];
-    return sortFn ? [...filtered].sort(sortFn) : filtered;
-  }, [items, searchQuery, selectedGenres, sortBy, sortFunctions]);
+  const sortedItems = useMemo(() => {
+    const sortFn = sortFunctions[sortBy];
+    return sortFn ? [...filteredItems].sort(sortFn) : filteredItems;
+  }, [filteredItems, sortBy, sortFunctions]);
 
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -231,19 +291,71 @@ export function FourKPage() {
   }
 
   return (
-    <div className="min-h-screen pb-20">
-      <div className="flex flex-col items-center justify-center py-8 px-4 space-y-6">
-        <motion.button
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
-          onClick={pickRandomMovie}
-          className="flex items-center gap-2 px-6 py-3 rounded-xl bg-foreground/[0.05] 
-            border border-foreground/10 hover:bg-foreground/10 transition-colors
-            shadow-lg shadow-black/5"
+    <div className="min-h-screen bg-gradient-to-b from-background via-background/95 to-background pb-20">
+      <div className="relative isolate">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="relative mb-16 text-center pt-8"
         >
-          <FilmIcon className="w-5 h-5" />
-          <span>Pick Random Movie</span>
-        </motion.button>
+          <div className="absolute inset-0 bg-gradient-to-r from-primary/20 via-secondary/20 to-primary/20 blur-[100px] opacity-30" />
+          <motion.div
+            initial={{ scale: 0.95 }}
+            animate={{ scale: 1 }}
+            transition={{ 
+              type: "spring",
+              stiffness: 300,
+              damping: 30
+            }}
+          >
+            <div className="relative inline-flex items-center justify-center mb-6">
+              <motion.div
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{
+                  type: "spring",
+                  stiffness: 400,
+                  damping: 20,
+                  delay: 0.2
+                }}
+                className="relative"
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-primary/30 to-secondary/30 blur-2xl opacity-50" />
+                <FilmIcon className="w-16 h-16 sm:w-20 sm:h-20 text-primary/90" />
+              </motion.div>
+            </div>
+
+            <h1 className="relative text-5xl sm:text-6xl lg:text-7xl font-black tracking-tight mb-6">
+              <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary via-secondary to-primary animate-gradient">
+                4K Movies
+              </span>
+            </h1>
+            <motion.p 
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              className="text-xl text-muted-foreground max-w-2xl mx-auto mb-8"
+            >
+              Explore our collection of high-quality 4K content
+            </motion.p>
+
+            <motion.button
+              whileHover={{ 
+                scale: 1.02,
+                boxShadow: "0 20px 40px -15px rgba(0,0,0,0.3), 0 0 20px -5px var(--primary)"
+              }}
+              whileTap={{ scale: 0.98 }}
+              onClick={pickRandomMovie}
+              className="flex items-center gap-3 px-8 py-4 rounded-2xl bg-foreground/[0.03] 
+                border border-foreground/10 hover:bg-foreground/[0.05] transition-colors
+                shadow-lg shadow-black/5 backdrop-blur-xl relative group mx-auto"
+            >
+              <SparklesIcon className="w-6 h-6 transition-transform duration-300 group-hover:rotate-12" />
+              <span className="text-lg font-medium">Discover Random Movie</span>
+              <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-primary/10 via-transparent to-primary/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            </motion.button>
+          </motion.div>
+        </motion.div>
       </div>
 
       <RandomMovieModal
@@ -253,7 +365,7 @@ export function FourKPage() {
         onNext={pickRandomMovie}
       />
 
-      <div className="w-full max-w-[1420px] mx-auto py-8 min-h-screen px-3 sm:px-4">
+      <div className="w-full max-w-[1420px] mx-auto py-8 px-3 sm:px-4">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -261,33 +373,36 @@ export function FourKPage() {
         >
           <div className="space-y-8 mb-12">
             <div className="flex flex-col gap-6">
-              <div className="relative flex-grow">
+              <div className="relative group">
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                  <MagnifyingGlassIcon className="w-5 h-5 text-foreground/40" />
+                  <MagnifyingGlassIcon className="w-5 h-5 text-foreground/40 group-focus-within:text-primary transition-colors duration-200" />
                 </div>
                 <input
                   type="text"
                   placeholder="Search movies..."
                   value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.currentTarget.value || '')}
                   className="w-full h-14 pl-12 pr-4 rounded-2xl bg-foreground/[0.03] border border-foreground/[0.08] 
                     focus:border-primary/50 focus:ring-2 focus:ring-primary/20 transition-all duration-200 
                     placeholder:text-foreground/40 text-foreground backdrop-blur-xl text-lg"
                 />
-                <div className="absolute inset-0 -z-10 bg-gradient-to-r from-primary/10 via-transparent to-primary/5 blur-xl opacity-50" />
+                <div className="absolute inset-0 -z-10 bg-gradient-to-r from-primary/10 via-transparent to-primary/5 blur-xl opacity-0 group-focus-within:opacity-50 transition-opacity duration-300" />
               </div>
 
               <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
                 onClick={() => setShowFilters(!showFilters)}
                 className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium
                   bg-foreground/[0.03] hover:bg-foreground/[0.05] border border-foreground/[0.08] 
-                  hover:border-foreground/[0.15] transition-all duration-200"
+                  hover:border-foreground/[0.15] transition-all duration-200 backdrop-blur-xl w-fit"
               >
                 <AdjustmentsHorizontalIcon className="w-5 h-5" />
                 Filters
                 <motion.span
                   animate={{ rotate: showFilters ? 180 : 0 }}
-                  className="ml-1"
+                  transition={{ type: "spring", stiffness: 200, damping: 20 }}
+                  className="ml-1 origin-center"
                 >
                   ▼
                 </motion.span>
@@ -299,7 +414,7 @@ export function FourKPage() {
                     initial={{ height: 0, opacity: 0 }}
                     animate={{ height: "auto", opacity: 1 }}
                     exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.2 }}
+                    transition={{ duration: 0.3, ease: "easeInOut" }}
                     className="space-y-6 overflow-hidden"
                   >
                     <div className="space-y-3">
@@ -359,30 +474,47 @@ export function FourKPage() {
               animate={{ opacity: 1 }}
               className="flex items-center justify-between px-1"
             >
-              <div className="flex items-center gap-2">
-                <span className="px-3 py-1 rounded-lg bg-primary/10 text-primary font-medium text-sm">
-                  {filteredAndSortedItems.length}
+              <div className="flex items-center gap-3">
+                <span className="px-4 py-1.5 rounded-xl bg-primary/10 text-primary font-medium text-sm">
+                  {sortedItems.length}
                 </span>
                 <p className="text-sm text-foreground/60">
                   of {items.length} movies
                 </p>
               </div>
               {(searchQuery || selectedGenres.length > 0) && (
-                <button
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
                   onClick={clearFilters}
-                  className="text-sm text-primary hover:text-primary/80 transition-colors"
+                  className="text-sm text-primary hover:text-primary/80 transition-colors px-4 py-1.5 rounded-xl
+                    hover:bg-primary/5 border border-transparent hover:border-primary/10"
                 >
                   Clear Filters
-                </button>
+                </motion.button>
               )}
             </motion.div>
           </div>
 
           <LayoutGroup>
-            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6 md:gap-8">
+            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
               <AnimatePresence mode="wait">
-                {filteredAndSortedItems.map((item: MediaItem) => (
-                  <ContentCard key={item.id} {...item} />
+                {sortedItems.map((item: MediaItem) => (
+                  <motion.div
+                    key={item.id}
+                    layout
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.8 }}
+                    transition={{ 
+                      duration: 0.2,
+                      type: "spring",
+                      stiffness: 200,
+                      damping: 25
+                    }}
+                  >
+                    <ContentCard {...item} />
+                  </motion.div>
                 ))}
               </AnimatePresence>
             </div>
@@ -392,11 +524,11 @@ export function FourKPage() {
         <AnimatePresence>
           {showScrollTop && (
             <motion.button
-              initial={{ opacity: 0, scale: 0.5 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.5 }}
+              initial={{ opacity: 0, scale: 0.5, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.5, y: 20 }}
               onClick={scrollToTop}
-              className="fixed bottom-24 right-6 z-50 p-2.5 rounded-xl 
+              className="fixed bottom-24 right-6 z-50 p-3 rounded-2xl 
                 bg-background/80 backdrop-blur-xl border border-foreground/[0.08]
                 shadow-lg hover:shadow-xl transition-all duration-300 group
                 hover:border-foreground/[0.12] hover:bg-foreground/[0.03]"
@@ -411,16 +543,14 @@ export function FourKPage() {
               whileTap={{ scale: 0.95 }}
             >
               <div className="relative">
-                <ArrowUpIcon className="w-5 h-5 text-foreground/70 transition-transform duration-300 
+                <ArrowUpIcon className="w-6 h-6 text-foreground/70 transition-transform duration-300 
                   group-hover:text-foreground group-hover:translate-y-[-2px]" />
                 
-                {/* Hover glow effect */}
-                <div className="absolute -inset-2 rounded-xl opacity-0 group-hover:opacity-100
+                <div className="absolute -inset-3 rounded-2xl opacity-0 group-hover:opacity-100
                   bg-gradient-to-t from-primary/20 via-primary/10 to-transparent
                   blur-md transition-opacity duration-300" />
                   
-                {/* Subtle shine effect */}
-                <div className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100
+                <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100
                   bg-gradient-to-tr from-primary/0 via-primary/5 to-primary/0
                   transition-opacity duration-300" />
               </div>
